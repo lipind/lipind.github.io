@@ -1,0 +1,50 @@
+path /events/{eventId} {
+  read() { isEventAdmin(eventId) }
+  path /info {
+    write() { isEventAdmin(eventId) }
+  }
+  path /keys is Keys {}
+  path /admins/{userId} is Boolean {
+    read() { auth.uid == userId }
+  }
+  path /attendees/{attendeeId} is Attendee {
+  }
+  path /checkins/{attendeeId} is CheckIn {
+    write() { isEventAdmin(eventId) }
+  }
+  path /fulfillment/{userId}/{clientId} {
+    path /available is String | Null {
+      write() { auth.uid == userId }
+    }
+    path /jobs/{jobId} is FulfillmentJob {
+      write() { auth.uid == userId }
+    }
+  }
+}
+
+type Keys {
+  attendee: String,
+  staff: String
+}
+
+type Attendee {
+  // Display name
+  displayName: String,
+
+  // Extra information
+  info: Any | Null
+}
+
+type FulfillmentJob {
+  time: Number,
+  refCode: String,
+  displayName: String,
+  info: Any | Null
+}
+
+type CheckIn {
+  time: Number,
+  mode: String
+}
+
+isEventAdmin(eventId) { root.events[eventId].admins[auth.uid] != null }
