@@ -30,11 +30,10 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      - name: Install dependencies
+        run: npm install
       - name: Build project
-        run: |
-          # 假设你的项目需要构建，这里可以运行构建命令
-          npm install
-          npm run build
+        run: npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
